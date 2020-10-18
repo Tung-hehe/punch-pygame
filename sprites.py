@@ -12,9 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.load_image()
         self.image = self.stand[0]
         self.rect = self.image.get_rect()
-        self.rect.x = 0
-        self.rect.y = 0
-        self.rect.midbottom = (self.rect.x, self.rect.y)
+        self.size = self.image.get_size()
         self.current_frame = 0
         self.current_attack = 0
         self.attack_q = False
@@ -28,12 +26,11 @@ class Player(pygame.sprite.Sprite):
         self.stand = load_sprite('image/Player/stand/', 6)
         self.run = load_sprite('image/Player/run/', 8)
         self.jump = load_sprite('image/Player/jump/', 4)
-        self.fall = load_sprite('image/Player/fall/', 4)
-        self.combo1 = load_sprite('image/Player/attack/combo1/', 17)
+        self.combo1 = load_sprite('image/Player/attack/combo1/', 8)
         self.combo2 = load_sprite('image/Player/attack/combo2/', 7)
         self.combo3 = load_sprite('image/Player/attack/combo3/', 8)
     def animate(self, action):
-        self.current_frame += 0.12
+        self.current_frame += 0.2
         if self.face_right == True:
             self.image = action[int(self.current_frame) % len(action)]
         else:
@@ -86,6 +83,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.combo2[int(self.current_attack)]
             else:
                 self.image = pygame.transform.flip(self.combo2[int(self.current_attack)], True, False)
+        self.size = self.image.get_size()
 
 class Platform(pygame.sprite.Sprite):
      def __init__(self, x = 0, y = 0, type = '1'):
