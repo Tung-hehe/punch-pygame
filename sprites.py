@@ -20,6 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.attack_q = False
         self.attack_e = False
         self.attack_r = False
+        self.attack_f = False
         self.moving = False
         self.face_right = True
         self.cout_jump = 0
@@ -32,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.combo1 = load_sprite('image/Player/attack/combo1/', 17)
         self.combo2 = load_sprite('image/Player/attack/combo2/', 7)
         self.combo3 = load_sprite('image/Player/attack/combo3/', 8)
+        self.combo4 = load_sprite('image/Player/attack/combo4/', 7)
     def animate(self, action):
         self.current_frame += 0.12
         if self.face_right == True:
@@ -86,6 +88,15 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.combo2[int(self.current_attack)]
             else:
                 self.image = pygame.transform.flip(self.combo2[int(self.current_attack)], True, False)
+        if self.attack_f:
+            self.current_attack += 0.2
+            if self.current_attack >= len(self.combo4):
+                self.current_attack = 0
+                self.attack_f = False
+            if self.face_right:
+                self.image = self.combo4[int(self.current_attack)]
+            else:
+                self.image = pygame.transform.flip(self.combo4[int(self.current_attack)], True, False)
 
 class Platform(pygame.sprite.Sprite):
      def __init__(self, x = 0, y = 0, type = '1'):

@@ -73,6 +73,8 @@ while running:
                 player.attack_e = True
             if event.key == pygame.K_r:
                 player.attack_r = True
+            if event.key == pygame.K_f:
+                player.attack_f = True
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
         if event.type == pygame.KEYUP:
