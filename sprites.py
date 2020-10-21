@@ -13,17 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.stand[0]
         self.rect = self.image.get_rect()
         self.size = self.image.get_size()
-<<<<<<< HEAD
-        self.current_frame = 0
-        self.current_attack = 0
-        self.attack_q = False
-        self.attack_e = False
-        self.attack_r = False
-        self.attack_f = False
-        self.moving = False
-=======
         self.vel = vec(0, 0)
->>>>>>> b18bdb2bd5e472e805213d2a45ff77ca14147981
         self.face_right = True
         self.moving = False
         self.attacking = False
@@ -37,15 +27,6 @@ class Player(pygame.sprite.Sprite):
     def load_image(self):
         self.stand = load_sprite('image/Player/stand/', 6)
         self.run = load_sprite('image/Player/run/', 8)
-<<<<<<< HEAD
-        self.jump = load_sprite('image/Player/jump/', 4)
-        self.combo1 = load_sprite('image/Player/attack/combo1/', 8)
-        self.combo2 = load_sprite('image/Player/attack/combo2/', 7)
-        self.combo3 = load_sprite('image/Player/attack/combo3/', 8)
-        self.combo4 = load_sprite('image/Player/attack/combo4/', 7)
-    def animate(self, action):
-        self.current_frame += 0.2
-=======
         self.jump = [[pygame.image.load('image/Player/jump/1.png')],
                      [pygame.image.load('image/Player/jump/' + str(i+1) + '.png') for i in range(4,9)]]
         self.fall = [[pygame.image.load('image/Player/jump/' + str(i+1) + '.png') for i in range(1,4)],
@@ -53,7 +34,8 @@ class Player(pygame.sprite.Sprite):
         self.punch = [load_sprite('image/Player/attack/punch1/', 4),
                       load_sprite('image/Player/attack/punch2/', 4),
                       load_sprite('image/Player/attack/punch3/', 8)]
-        self.kick = load_sprite('image/Player/attack/kick/',7)
+        self.kick = [load_sprite('image/Player/attack/kick1/', 7), 
+                     load_sprite('image/Player/attack/kick2/', 7)]
         self.block = load_sprite('image/Player/block/',7)
 
     def move(self, tiles):
@@ -78,23 +60,12 @@ class Player(pygame.sprite.Sprite):
 
     def animate(self, action, speed):
         self.normal_frame += speed
->>>>>>> b18bdb2bd5e472e805213d2a45ff77ca14147981
         if self.face_right == True:
             self.image = action[int(self.normal_frame) % len(action)]
         else:
             self.image = pygame.transform.flip(action[int(self.normal_frame) % len(action)], True, False)
 
     def update(self):
-<<<<<<< HEAD
-        self.vel.y += GRAVITY
-        if self.vel.y > PLAYER_MAX_Y:
-            self.vel.y = PLAYER_MAX_Y
-        # if self.jump:
-        #     if self.face_right:
-        #         self.vel.x += PLAYER_ACC
-        #     self.animate(self.jump)
-=======
->>>>>>> b18bdb2bd5e472e805213d2a45ff77ca14147981
         if self.moving:
             if self.face_right:
                 self.vel.x += PLAYER_ACC
@@ -147,45 +118,6 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = 0
         if self.rect.x >= WIDTH - self.rect.width:
             self.rect.x = WIDTH - self.rect.width
-<<<<<<< HEAD
-        if self.attack_q:
-            self.current_attack += 0.2
-            if self.current_attack >= len(self.combo1):
-                self.current_attack = 0
-                self.attack_q = False
-            if self.face_right:
-                self.image = self.combo1[int(self.current_attack)]
-            else:
-                self.image = pygame.transform.flip(self.combo1[int(self.current_attack)], True, False)
-        if self.attack_r:
-            self.current_attack += 0.2
-            if self.current_attack >= len(self.combo3):
-                self.current_attack = 0
-                self.attack_r = False
-            if self.face_right:
-                self.image = self.combo3[int(self.current_attack)]
-            else:
-                self.image = pygame.transform.flip(self.combo3[int(self.current_attack)], True, False)
-        if self.attack_e:
-            self.current_attack += 0.2
-            if self.current_attack >= len(self.combo2):
-                self.current_attack = 0
-                self.attack_e = False
-            if self.face_right:
-                self.image = self.combo2[int(self.current_attack)]
-            else:
-                self.image = pygame.transform.flip(self.combo2[int(self.current_attack)], True, False)
-        if self.attack_f:
-            self.current_attack += 0.2
-            if self.current_attack >= len(self.combo4):
-                self.current_attack = 0
-                self.attack_f = False
-            if self.face_right:
-                self.image = self.combo4[int(self.current_attack)]
-            else:
-                self.image = pygame.transform.flip(self.combo4[int(self.current_attack)], True, False)
-=======
->>>>>>> b18bdb2bd5e472e805213d2a45ff77ca14147981
         self.size = self.image.get_size()
 
 class Platform(pygame.sprite.Sprite):
