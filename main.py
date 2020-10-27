@@ -19,6 +19,8 @@ map = [['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0',
        ['4','5','5','5','6','0','4','5','5','5','5','5','5','5','5','5','5','5','5','6']]
 all_sprites = pygame.sprite.Group()
 player = Player()
+monster = Monster(200, 437, 'Wolf')
+monsters = pygame.sprite.Group()
 platforms = pygame.sprite.Group()
 platform = Platform()
 for x in range(len(map)):
@@ -28,6 +30,8 @@ for x in range(len(map)):
             platforms.add(platform)
 all_sprites.add(platforms)
 all_sprites.add(player)
+all_sprites.add(monster)
+monsters.add(monster)
 running = True
 while running:
     clock.tick(FPS)
@@ -47,6 +51,21 @@ while running:
                     player.jumping = True
                     player.cout_jump += 1
             if event.key == pygame.K_j:
+                if player.type_attack != player.punch:
+                    player.type_attack = player.punch
+                    player.cout_attack = 0
+                if not player.attacking:
+                    player.attacking = True
+            if event.key == pygame.K_k:
+                if player.type_attack != player.kick:
+                    player.type_attack = player.kick
+                    player.cout_attack = 0
+                if not player.attacking:
+                    player.attacking = True
+            if event.key == pygame.K_l:
+                if player.type_attack != player.block:
+                    player.type_attack = player.block
+                    player.cout_attack = 0
                 if not player.attacking:
                     player.attacking = True
             if event.key == pygame.K_ESCAPE:
@@ -56,9 +75,20 @@ while running:
                 player.moving = False
             if event.key == pygame.K_d:
                 player.moving = False
+        for monster in monsters:
+            if player.attacking and pygame.sprite.collide_mask(player, monster):
+                monsters.remove(monster)
+            if abs(player.rect.x - monster.rect.x) <= 50:
+                monster.attacking = True
     player.move(platforms)
     all_sprites.update()
     platforms.draw(screen)
-    screen.blit(player.image, (player.rect.x - (player.size[0] - player.rect.w)/2, player.rect.y - (player.size[1] - player.rect.h)))
+    for monster in monsters:
+        screen.blit(monster.image,
+                    (monster.rect.x - (monster.size[0] - monster.rect.w) / 2,
+                     monster.rect.y - (monster.size[1] - monster.rect.h)))
+    screen.blit(player.image,
+                (player.rect.x - (player.size[0] - player.rect.w)/2,
+                 player.rect.y - (player.size[1] - player.rect.h)))
     pygame.display.flip()
 pygame.quit()
