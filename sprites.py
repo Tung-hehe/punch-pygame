@@ -95,19 +95,13 @@ class Player(pygame.sprite.Sprite):
         if self.attacking:
             self.vel.x = 0
             self.attack_frame += SPEED_ATTACK
-            if self.attack_frame >= len(self.punch[0]) + len(self.punch[1]):
+            if self.attack_frame >= len(self.kick[1]):
                 self.attacking = False
                 self.attack_frame = 0
             if self.face_right:
-                if self.attack_frame < len(self.punch[0]):
-                    self.image = self.punch[0][int(self.attack_frame)]
-                if self.attack_frame >= len(self.punch[0]) and self.attack_frame < len(self.punch[0]) + len(self.punch[1]):
-                    self.image = self.punch[1][int(self.attack_frame)%len(self.punch[1])]
+                self.image = self.kick[1][int(self.attack_frame)]
             else:
-                if self.attack_frame < len(self.punch[0]):
-                    self.image = pygame.transform.flip(self.punch[0][int(self.attack_frame)], True, False)
-                if self.attack_frame >= len(self.punch[0]) and self.attack_frame < len(self.punch[0]) + len(self.punch[1]):
-                    self.image = pygame.transform.flip(self.punch[1][int(self.attack_frame)%len(self.punch[1])], True, False)
+                self.image = pygame.transform.flip(self.kick[1][int(self.attack_frame)], True, False)
         if self.vel.y > PLAYER_MAX_Y:
             self.vel.y = PLAYER_MAX_Y
         if self.vel.x <= -PLAYER_MAX_X:
