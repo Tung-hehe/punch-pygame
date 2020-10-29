@@ -6,36 +6,32 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('PUNCH!!!!!')
 clock = pygame.time.Clock()
-background = pygame.image.load('image/Map_2/BG.png').convert()
-map = [['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-       ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-       ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-       ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-       ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-       ['0','0','0','0','0','0','0','0','0','0','1','2','3','0','0','0','0','0','0','0'],
-       ['0','0','0','0','0','0','0','0','1','2','8','5','6','0','0','0','0','0','0','0'],
-       ['0','0','0','0','0','0','1','2','8','5','5','5','6','0','0','0','0','1','2','3'],
-       ['1','2','2','2','3','0','4','5','5','5','5','5','10','2','2','2','2','8','5','6'],
-       ['4','5','5','5','6','0','4','5','5','5','5','5','5','5','5','5','5','5','5','6']]
-all_sprites = pygame.sprite.Group()
+def load_map(filename):
+    file = open(filename, 'r')
+    data = file.read()
+    file.close()
+    data = data.split('\n')
+    map = []
+    for tile in data:
+        map.append(list(tile))
+    return map
+skeleton_map = load_map('image/Map_2/map.txt')
+map = pygame.image.load('image/Map_2/map.png')
+map_length = TILE_SIZE * len(skeleton_map[0])
+map_check = 0
+camera = 0
 player = Player()
-monster = Monster(200, 437, 'Wolf')
-monsters = pygame.sprite.Group()
+monster = Monster(1020, 257)
 platforms = pygame.sprite.Group()
 platform = Platform()
-for x in range(len(map)):
-    for y in range(len(map[0])):
-        if map[x][y] != '0':
-            platform = Platform(y*TILE_SIZE, x*TILE_SIZE, map[x][y])
+for x in range(len(skeleton_map)):
+    for y in range(len(skeleton_map[0])):
+        if skeleton_map[x][y] != '0':
+            platform = Platform(y*TILE_SIZE, x*TILE_SIZE)
             platforms.add(platform)
-all_sprites.add(platforms)
-all_sprites.add(player)
-all_sprites.add(monster)
-monsters.add(monster)
 running = True
 while running:
     clock.tick(FPS)
-    screen.blit(background, (-360, -200))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -75,18 +71,32 @@ while running:
                 player.moving = False
             if event.key == pygame.K_d:
                 player.moving = False
-        for monster in monsters:
-            if player.attacking and pygame.sprite.collide_mask(player, monster):
-                monsters.remove(monster)
-            if abs(player.rect.x - monster.rect.x) <= 50:
-                monster.attacking = True
-    player.move(platforms)
-    all_sprites.update()
-    platforms.draw(screen)
-    for monster in monsters:
-        screen.blit(monster.image,
-                    (monster.rect.x - (monster.size[0] - monster.rect.w) / 2,
-                     monster.rect.y - (monster.size[1] - monster.rect.h)))
+    map_check += player.vel.x
+    if map_check <= 0:
+        map_check = 0
+    if map_check >= WIDTH / 2 and map_check <= map_length - WIDTH / 2:
+        camera -= player.vel.x
+        screen.blit(map, (camera, 0))
+        monster.rect.x -= player.vel.x
+        for platform in platforms:
+            platform.rect.x -= player.vel.x
+        hits_list = pygame.sprite.spritecollide(player, platforms, False)
+        for hit in hits_list:
+            if player.vel.x > 0:
+                player.rect.right = hit.rect.left
+            if player.vel.x < 0:
+                player.rect.left = hit.rect.right
+        if len(hits_list) > 0:
+            player.vel.x = 0
+    else:
+        player.move_x(platforms)
+        screen.blit(map, (camera, 0))
+    player.move_y(platforms)
+    player.update()
+    monster.update()
+    screen.blit(monster.image,
+                (monster.rect.x - (monster.size[0] - monster.rect.w) / 2,
+                 monster.rect.y - (monster.size[1] - monster.rect.h)))
     screen.blit(player.image,
                 (player.rect.x - (player.size[0] - player.rect.w)/2,
                  player.rect.y - (player.size[1] - player.rect.h)))

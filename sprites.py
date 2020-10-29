@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
                      load_sprite('image/Player/attack/kick2/', 7)]
         self.block = [load_sprite('image/Player/block/',7)]
 
-    def move(self, tiles):
+    def move_x(self, tiles):
         self.rect.x += self.vel.x
         hits_list = pygame.sprite.spritecollide(self, tiles, False)
         for hit in hits_list:
@@ -50,6 +50,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.right = hit.rect.left
             if self.vel.x < 0:
                 self.rect.left = hit.rect.right
+    def move_y(self, tiles):
         self.rect.y += self.vel.y
         hits_list = pygame.sprite.spritecollide(self, tiles, False)
         for hit in hits_list:
@@ -123,15 +124,9 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
 class Platform(pygame.sprite.Sprite):
-     def __init__(self, x = 0, y = 0, type = '1'):
+     def __init__(self, x = 0, y = 0):
          pygame.sprite.Sprite.__init__(self)
-         self.type = type
-         self.image = pygame.image.load('image/Map_2/Tiles/Tile_' + self.type +'.png').convert_alpha()
-         self.image.set_colorkey(WHITE)
-         self.rect = self.image.get_rect()
-         self.rect.x = x
-         self.rect.y = y
-         self.pos = vec(self.rect.x, self.rect.y)
+         self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
 
 class Monster(pygame.sprite.Sprite):
     def __init__(self, x = 0, y = 0, type = "Wolf"):
