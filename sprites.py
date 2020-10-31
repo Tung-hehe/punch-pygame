@@ -11,6 +11,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.load_image()
         self.image = self.stand[0]
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.size = self.image.get_size()
         self.vel = vec(0, 0)
@@ -23,6 +24,9 @@ class Player(pygame.sprite.Sprite):
         self.attack_frame = 0
         self.jump_frame = 0
         self.cout_jump = 0
+        self.cout_attack = 0
+        self.start_attack = pygame.time.get_ticks()
+        self.type_attack = self.punch
 
     def load_image(self):
         self.stand = load_sprite('image/Player/stand/', 6)
@@ -36,9 +40,9 @@ class Player(pygame.sprite.Sprite):
                       load_sprite('image/Player/attack/punch3/', 8)]
         self.kick = [load_sprite('image/Player/attack/kick1/', 7), 
                      load_sprite('image/Player/attack/kick2/', 7)]
-        self.block = load_sprite('image/Player/block/',7)
+        self.block = [load_sprite('image/Player/block/',7)]
 
-    def move(self, tiles):
+    def move_x(self, tiles):
         self.rect.x += self.vel.x
         hits_list = pygame.sprite.spritecollide(self, tiles, False)
         for hit in hits_list:
@@ -46,6 +50,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.right = hit.rect.left
             if self.vel.x < 0:
                 self.rect.left = hit.rect.right
+    def move_y(self, tiles):
         self.rect.y += self.vel.y
         hits_list = pygame.sprite.spritecollide(self, tiles, False)
         for hit in hits_list:
@@ -58,13 +63,21 @@ class Player(pygame.sprite.Sprite):
         if len(hits_list) == 0:
             self.falling = True
 
+    # def animate(self, action, speed):
+    #     self.normal_frame += speed
+    #     if self.face_right:
+    #         self.image = action[int(self.normal_frame) % len(action)]
+    #     else:
+    #         self.image = pygame.transform.flip(action[int(self.normal_frame) % len(action)], True, False)
     def animate(self, action, speed):
         self.normal_frame += speed
-        if self.face_right == True:
-            self.image = action[int(self.normal_frame) % len(action)]
+        frame_action = action[int(self.normal_frame) % len(action)]
+        if self.face_right:
+            image_action = frame_action
         else:
-            self.image = pygame.transform.flip(action[int(self.normal_frame) % len(action)], True, False)
-
+            image_action = pygame.transform.flip(frame_action, True, False)
+        self.image = image_action
+    
     def update(self):
         if self.moving:
             if self.face_right:
@@ -95,13 +108,16 @@ class Player(pygame.sprite.Sprite):
         if self.attacking:
             self.vel.x = 0
             self.attack_frame += SPEED_ATTACK
-            if self.attack_frame >= len(self.kick[1]):
+            if self.attack_frame >= len(self.type_attack[self.cout_attack]):
                 self.attacking = False
                 self.attack_frame = 0
+                self.cout_attack += 1
+            if self.cout_attack >= len(self.type_attack):
+                self.cout_attack = 0
             if self.face_right:
-                self.image = self.kick[1][int(self.attack_frame)]
+                self.image = self.type_attack[self.cout_attack][int(self.attack_frame)]
             else:
-                self.image = pygame.transform.flip(self.kick[1][int(self.attack_frame)], True, False)
+                self.image = pygame.transform.flip(self.type_attack[self.cout_attack][int(self.attack_frame)], True, False)
         if self.vel.y > PLAYER_MAX_Y:
             self.vel.y = PLAYER_MAX_Y
         if self.vel.x <= -PLAYER_MAX_X:
@@ -113,14 +129,54 @@ class Player(pygame.sprite.Sprite):
         if self.rect.x >= WIDTH - self.rect.width:
             self.rect.x = WIDTH - self.rect.width
         self.size = self.image.get_size()
+        self.mask = pygame.mask.from_surface(self.image)
 
 class Platform(pygame.sprite.Sprite):
-     def __init__(self, x = 0, y = 0, type = '1'):
+     def __init__(self, x = 0, y = 0):
          pygame.sprite.Sprite.__init__(self)
-         self.type = type
-         self.image = pygame.image.load('image/Map_2/Tiles/Tile_' + self.type +'.png').convert_alpha()
-         self.image.set_colorkey(WHITE)
-         self.rect = self.image.get_rect()
-         self.rect.x = x
-         self.rect.y = y
-         self.pos = vec(self.rect.x, self.rect.y)
+         self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+
+class Monster(pygame.sprite.Sprite):
+    def __init__(self, x = 0, y = 0, type = "Wolf"):
+        pygame.sprite.Sprite.__init__(self)
+        self.type = type
+        self.load_image()
+        self.image = self.stand[0]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.face_right = False
+        self.attacking = False
+        self.moving = False
+        self.rect = self.image.get_rect()
+        self.size = self.image.get_size()
+        self.normal_frame = 0
+        self.attack_frame = 0
+        self.pause_attack = 0
+        self.rect.x = x
+        self.rect.y = y
+        self.vel = vec(0, 0)
+    def load_image(self):
+        self.stand = load_sprite('image/Monster/' + self.type +'/stand/', 4)
+        self.attack = load_sprite('image/Monster/Wolf/attack/', 7)
+        self.dead = load_sprite('image/Monster/Wolf/dead/', 9)
+    def animate(self, action, speed):
+        self.normal_frame += speed
+        if self.face_right:
+            self.image = action[int(self.normal_frame) % len(action)]
+        else:
+            self.image = pygame.transform.flip(action[int(self.normal_frame) % len(action)], True, False)
+    def update(self):
+        if self.attacking:
+            self.vel.x = 0
+            self.attack_frame += SPEED_ATTACK
+            if self.attack_frame >= len(self.attack):
+                self.attacking = False
+                self.pause_attack = pygame.time.get_ticks()
+                self.attack_frame = 0
+            if self.face_right:
+                self.image = self.attack[int(self.attack_frame)]
+            else:
+                self.image = pygame.transform.flip(self.attack[int(self.attack_frame)], True, False)
+        else:
+            self.animate(self.stand, 0.2)
+        self.size = self.image.get_size()
+        self.mask = pygame.mask.from_surface(self.image)
