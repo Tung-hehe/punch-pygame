@@ -34,20 +34,25 @@ def main():
     # -----Main Program Loop-----
     while running:
         clock.tick(setting.FPS)
+        # Handing events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
+                # Moving left event
                 if event.key == pygame.K_a:
                     player.moving = True
                     player.face_right = False
+                # Moving right event
                 if event.key == pygame.K_d:
                     player.moving = True
                     player.face_right = True
+                # Jumping event
                 if event.key == pygame.K_w:
                     if player.cout_jump < 1:
                         player.jumping = True
                         player.cout_jump += 1
+                # Attacking event
                 if event.key == pygame.K_j:
                     if player.type_attack not in [player.punch_r, player.punch_l]:
                         if player.face_right:
@@ -67,7 +72,7 @@ def main():
                     if not player.attacking:
                         player.attacking = True
                 if event.key == pygame.K_l:
-                    if player.type_attack not in [player.block_r, player_l]:
+                    if player.type_attack not in [player.block_r, player.block_l]:
                         if player.face_right:
                             player.type_attack = player.block_r
                         else:
@@ -75,14 +80,34 @@ def main():
                         player.cout_attack = 0
                     if not player.attacking:
                         player.attacking = True
+                # Quit event
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     player.moving = False
                 if event.key == pygame.K_d:
                     player.moving = False
+
+        #If the player near the right side, scroll the map left
+        if player.rect.x >= setting.WIDTH * 1 / 2:
+            if current_map.map_scroll > -current_map.map_limit + setting.WIDTH:
+                diff = player.rect.x - setting.WIDTH * 1 / 2
+                player.rect.x = setting.WIDTH * 1 / 2
+                current_map.scroll_map(-diff)
+
+        # If the player near the left side, scroll the map right
+        if player.rect.x <= setting.WIDTH * 1 / 2 - 1:
+            if current_map.map_scroll <0:
+                current_map.scroll_map(-diff)
+                diff = player.rect.x - setting.WIDTH * 1 / 2 + 1
+                player.rect.x = setting.WIDTH * 1 / 2 - 1
+
+        # Update player
         player.update()
+
+        # Draw everything
         current_map.draw(screen)
         player.draw(screen)
         pygame.display.flip()
