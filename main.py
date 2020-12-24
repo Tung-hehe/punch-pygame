@@ -18,6 +18,8 @@ def main():
 
     # Create the player
     player = Player()
+    player.rect.x = 0
+    player.rect.y = 400
 
     # Create all the maps
     map_list = []
@@ -104,8 +106,9 @@ def main():
                 diff = player.rect.x - setting.WIDTH * 1 / 2 + 1
                 player.rect.x = setting.WIDTH * 1 / 2 - 1
 
-        # Update player
+        # Update everything
         player.update()
+        current_map.update()
 
         # Draw everything
         current_map.draw(screen)

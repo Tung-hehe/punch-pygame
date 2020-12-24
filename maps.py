@@ -1,6 +1,8 @@
 import pygame
 import setting
 import platforms
+import monsters
+import items
 
 def load_ground(filename):
     file = open(filename, 'r')
@@ -19,6 +21,7 @@ class Map(pygame.sprite.Sprite):
     # Lists of sprites used in all maps
     platform_list = None
     enemy_list = None
+    item_list = None
 
     # Background map
     background = None
@@ -32,12 +35,19 @@ class Map(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
+        self.item_list = pygame.sprite.Group()
         self.player = player
 
     def update(self):
         """ Update everything on this map"""
-        self.platform_list.update()
         self.enemy_list.update()
+        self.item_list.update()
+        for enemy in self.enemy_list:
+            if abs(enemy.rect.x - self.player.rect.x) <= 50:
+                enemy.attacking = True
+                enemy.HP -= 1
+        hits = pygame.sprite.spritecollide(self.player, self.enemy_list,
+                                           False, pygame.sprite.collide_mask)
 
     def draw(self, screen):
         """ Draw everything on this map"""
@@ -48,7 +58,11 @@ class Map(pygame.sprite.Sprite):
         screen.blit(self.ground, (self.map_scroll, 0))
 
         # Draw all enemmy
-        self.enemy_list.draw(screen)
+        for enemy in self.enemy_list:
+            enemy.draw_health()
+            enemy.draw(screen)
+        # Draw all item
+        self.item_list.draw(screen)
 
     def scroll_map(self, scroll_x):
         """ When the user moves left/right and we need to scroll everything"""
@@ -69,7 +83,7 @@ class Map_01(Map):
         Map.__init__(self, player)
 
         self.background = pygame.image.load('image/Map_1/background.png').convert()
-        self.ground = pygame.image.load('image/Map_1/front_map.png').convert()
+        self.ground = pygame.image.load('image/Map_1/front_map.png').convert_alpha()
         self.ground.set_colorkey(setting.WHITE)
         tiles = load_ground('image/Map_1/map.txt')
         self.map_limit = setting.TILE_SIZE * len(tiles[0])
@@ -78,3 +92,13 @@ class Map_01(Map):
                 if tiles[x][y] != '0':
                     tile = platforms.Platform(y * setting.TILE_SIZE, x * setting.TILE_SIZE)
                     self.platform_list.add(tile)
+        enemy = monsters.Wolf(1020,258)
+        self.enemy_list.add(enemy)
+        item = items.Coin(20,20)
+        self.item_list.add(item)
+        item = items.Coin(50, 50)
+        self.item_list.add(item)
+        item = items.Coin(80, 80)
+        self.item_list.add(item)
+        item = items.Coin(110, 110)
+        self.item_list.add(item)

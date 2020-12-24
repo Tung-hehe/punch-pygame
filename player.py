@@ -28,6 +28,9 @@ class Player(pygame.sprite.Sprite):
     cout_jump = 0
     # Check combo of player
     cout_attack = 0
+    # HP of player
+    max_HP = setting.PLAYER_MAX_HEALTH
+    current_HP = setting.PLAYER_MAX_HEALTH
 
     def __init__(self):
         """ Constructor function"""
@@ -65,10 +68,10 @@ class Player(pygame.sprite.Sprite):
         self.fall_l = [sprites.hori_flip_sprite('image/Player/fall1/', 3),
                      sprites.hori_flip_sprite('image/Player/fall2/', 3)]
         # Load all the punching images
-        self.punch_l = [sprites.load_sprite('image/Player/attack/punch1/', 4),
+        self.punch_r = [sprites.load_sprite('image/Player/attack/punch1/', 4),
                       sprites.load_sprite('image/Player/attack/punch2/', 4),
                       sprites.load_sprite('image/Player/attack/punch3/', 8)]
-        self.punch_r = [sprites.hori_flip_sprite('image/Player/attack/punch1/', 4),
+        self.punch_l = [sprites.hori_flip_sprite('image/Player/attack/punch1/', 4),
                       sprites.hori_flip_sprite('image/Player/attack/punch2/', 4),
                       sprites.hori_flip_sprite('image/Player/attack/punch3/', 8)]
         # Load all the kicking images
@@ -81,14 +84,14 @@ class Player(pygame.sprite.Sprite):
         self.block_l = [sprites.hori_flip_sprite('image/Player/block/', 7)]
 
     def update(self):
-        """ This function used to update the player (cordinates, image). """
+        """ This function used to update the player (coordinates, image). """
         # If the player is moving
         if self.moving:
-            # Update cordinate
+            # Update coordinate
             if self.face_right:
-                self.vel[0] += setting.PLAYER_ACC
+                self.vel[0] += setting.PLAYER_VEL
             else:
-                self.vel[0] -= setting.PLAYER_ACC
+                self.vel[0] -= setting.PLAYER_VEL
 
             # If the player isn't jumping, falling => the player is running. Then load image for action run
             if not self.jumping and not self.falling:
@@ -151,7 +154,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.image = self.type_attack[self.cout_attack][int(self.attack_frame)]
 
-        # Limit of cordinate, velocity
+        # Limit of coordinate, velocity
         if self.vel[1] > setting.PLAYER_MAX_Y:
             self.vel[1] = setting.PLAYER_MAX_Y
         if self.vel[0] <= -setting.PLAYER_MAX_X:
@@ -189,6 +192,10 @@ class Player(pygame.sprite.Sprite):
         # Get size, mask of image
         self.size = self.image.get_size()
         self.mask = pygame.mask.from_surface(self.image)
+
+    def draw_health_bar(self):
+        """ This function used to draw health bar of the player. """
+        pass
 
     def draw(self, screen):
         """ This function is used to draw player"""
