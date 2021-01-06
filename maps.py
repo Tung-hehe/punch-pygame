@@ -40,14 +40,29 @@ class Map(pygame.sprite.Sprite):
 
     def update(self):
         """ Update everything on this map"""
-        self.enemy_list.update()
+        self.enemy_list.update(self.platform_list)
         self.item_list.update()
-        for enemy in self.enemy_list:
-            if abs(enemy.rect.x - self.player.rect.x) <= 50:
-                enemy.attacking = True
-                enemy.HP -= 1
+
+        # Find all enemy collide with the player
         hits = pygame.sprite.spritecollide(self.player, self.enemy_list,
-                                           False, pygame.sprite.collide_mask)
+                                           False, pygame.sprite.collide_rect_ratio(0.7))
+        for enemy in hits:
+            if enemy.rect.x >= self.player.rect.x:
+                if not enemy.face_right:
+                    enemy.attacking = True
+            else:
+                if enemy.face_right:
+                    enemy.attacking = True
+            if enemy.image in enemy.true_attack:
+                if self.player.image in self.player.true_block:
+                    self.player.current_HP -= enemy.damage / 25
+                else:
+                    self.player.current_HP -= enemy.damage / 5
+            if self.player.image in self.player.true_attack:
+                if (self.player.rect.x <= enemy.rect.x and self.player.face_right) or \
+                    (self.player.rect.x > enemy.rect.x and  not self.player.face_right):
+                    enemy.beaten = True
+                    enemy.current_HP -= self.player.damage / 5
 
     def draw(self, screen):
         """ Draw everything on this map"""
@@ -59,7 +74,6 @@ class Map(pygame.sprite.Sprite):
 
         # Draw all enemmy
         for enemy in self.enemy_list:
-            enemy.draw_health()
             enemy.draw(screen)
         # Draw all item
         self.item_list.draw(screen)
@@ -92,13 +106,5 @@ class Map_01(Map):
                 if tiles[x][y] != '0':
                     tile = platforms.Platform(y * setting.TILE_SIZE, x * setting.TILE_SIZE)
                     self.platform_list.add(tile)
-        enemy = monsters.Wolf(1020,258)
-        self.enemy_list.add(enemy)
-        item = items.Coin(20,20)
-        self.item_list.add(item)
-        item = items.Coin(50, 50)
-        self.item_list.add(item)
-        item = items.Coin(80, 80)
-        self.item_list.add(item)
-        item = items.Coin(110, 110)
-        self.item_list.add(item)
+        self.enemy_list.add(monsters.Wolf(1320, 482))
+        self.enemy_list.add(monsters.Female_Zombie(1200, 482))

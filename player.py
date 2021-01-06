@@ -1,6 +1,7 @@
 import pygame
 import setting
 import sprites
+
 class Player(pygame.sprite.Sprite):
     """ This class represents the player controls. """
 
@@ -12,16 +13,18 @@ class Player(pygame.sprite.Sprite):
     moving = False
     # Is the player attacking?
     attacking = False
+    blocking = False
     # Is the player jumping?
     jumping = False
     # Is the player falling?
     falling = True
-    # Which map is the phayer on?
+    # Which map is the player on?
     map = None
     # Frame for action run, stand
     frame = 0
     # Frame for action attack
     attack_frame = 0
+    block_frame = 0
     # Frame for action jump
     jump_frame = 0
     # Check double-jump
@@ -31,26 +34,14 @@ class Player(pygame.sprite.Sprite):
     # HP of player
     max_HP = setting.PLAYER_MAX_HEALTH
     current_HP = setting.PLAYER_MAX_HEALTH
+    damage = 20
 
     def __init__(self):
         """ Constructor function"""
         # Call the parent's constructor
         pygame.sprite.Sprite.__init__(self)
 
-        # Load all image of the player
-        self.load_image()
-        self.image = self.stand_r[0]
-        # Create mask for player, Useful for fast pixel perfect collision detection
-        self.mask = pygame.mask.from_surface(self.image)
-        # Get rectangle surrounding image, we will calculate its coordinates
-        self.rect = self.image.get_rect()
-        # Get size of image
-        self.size = self.image.get_size()
-        # Attack type of the player
-        self.type_attack = self.punch_r
-
-    def load_image(self):
-        """ This is a function used to load all the images of the player. """
+        """ Load all image of the player"""
         # Load all the standing images
         self.stand_r = sprites.load_sprite('image/Player/stand/', 6)
         self.stand_l = sprites.hori_flip_sprite('image/Player/stand/', 6)
@@ -59,29 +50,37 @@ class Player(pygame.sprite.Sprite):
         self.run_l = sprites.hori_flip_sprite('image/Player/run/', 8)
         # Load all the jumping images
         self.jump_r = [sprites.load_sprite('image/Player/jump1/', 1),
-                     sprites.load_sprite('image/Player/jump2/', 5)]
+                       sprites.load_sprite('image/Player/jump2/', 5)]
         self.jump_l = [sprites.hori_flip_sprite('image/Player/jump1/', 1),
-                     sprites.hori_flip_sprite('image/Player/jump2/', 5)]
+                       sprites.hori_flip_sprite('image/Player/jump2/', 5)]
         # Load all the falling images
         self.fall_r = [sprites.load_sprite('image/Player/fall1/', 3),
-                     sprites.load_sprite('image/Player/fall2/', 3)]
+                       sprites.load_sprite('image/Player/fall2/', 3)]
         self.fall_l = [sprites.hori_flip_sprite('image/Player/fall1/', 3),
-                     sprites.hori_flip_sprite('image/Player/fall2/', 3)]
-        # Load all the punching images
-        self.punch_r = [sprites.load_sprite('image/Player/attack/punch1/', 4),
-                      sprites.load_sprite('image/Player/attack/punch2/', 4),
-                      sprites.load_sprite('image/Player/attack/punch3/', 8)]
-        self.punch_l = [sprites.hori_flip_sprite('image/Player/attack/punch1/', 4),
-                      sprites.hori_flip_sprite('image/Player/attack/punch2/', 4),
-                      sprites.hori_flip_sprite('image/Player/attack/punch3/', 8)]
-        # Load all the kicking images
-        self.kick_r = [sprites.load_sprite('image/Player/attack/kick1/', 7),
-                     sprites.load_sprite('image/Player/attack/kick2/', 7)]
-        self.kick_l = [sprites.hori_flip_sprite('image/Player/attack/kick1/', 7),
-                     sprites.hori_flip_sprite('image/Player/attack/kick2/', 7)]
-        # Load all the blockiong images
-        self.block_r = [sprites.load_sprite('image/Player/block/', 7)]
-        self.block_l = [sprites.hori_flip_sprite('image/Player/block/', 7)]
+                       sprites.hori_flip_sprite('image/Player/fall2/', 3)]
+        # Load all the attack images
+        self.normal_attack_r = [sprites.load_sprite('image/Player/attack/normal_attack_1/', 4),
+                        sprites.load_sprite('image/Player/attack/normal_attack_2/', 4),
+                        sprites.load_sprite('image/Player/attack/normal_attack_3/', 7)]
+        self.normal_attack_l = [sprites.hori_flip_sprite('image/Player/attack/normal_attack_1/', 4),
+                        sprites.hori_flip_sprite('image/Player/attack/normal_attack_2/', 4),
+                        sprites.hori_flip_sprite('image/Player/attack/normal_attack_3/', 7)]
+        # Load all the blocking images
+        self.block_r = sprites.load_sprite('image/Player/block/', 7)
+        self.block_l = sprites.hori_flip_sprite('image/Player/block/', 7)
+        self.true_attack = [self.normal_attack_l[0][1], self.normal_attack_r[0][1],
+                            self.normal_attack_l[1][1], self.normal_attack_r[1][1],
+                            self.normal_attack_l[2][2], self.normal_attack_r[2][2]]
+        self.true_block = [self.block_r[0], self.block_l[0],
+                           self.block_r[1], self.block_l[1],
+                           self.block_r[2], self.block_l[2],
+                           self.block_r[3], self.block_l[3]]
+
+        self.image = self.stand_r[0]
+        # Get rectangle surrounding image, we will calculate its coordinates
+        self.rect = self.image.get_rect()
+        # Get size of image
+        self.size = self.image.get_size()
 
     def update(self):
         """ This function used to update the player (coordinates, image). """
@@ -112,7 +111,7 @@ class Player(pygame.sprite.Sprite):
 
         #If the player is jumping
         if self.jumping:
-            # Update cordinate
+            # Update coordinate
             self.vel[0] = 0
             self.falling = False
             self.jump_frame += setting.SPEED_JUMP
@@ -129,7 +128,7 @@ class Player(pygame.sprite.Sprite):
 
         # If the player is falling
         if self.falling:
-            # Update cordinate, the player are affected by gravity
+            # Update coordinate, the player are affected by gravity
             self.vel[1] += setting.GRAVITY
 
             # Load image for action fall
@@ -143,16 +142,26 @@ class Player(pygame.sprite.Sprite):
         if self.attacking:
             self.vel[0] = 0
             self.attack_frame += setting.SPEED_ATTACK
-            if self.attack_frame >= len(self.type_attack[self.cout_attack]):
+            if self.attack_frame >= len(self.normal_attack_r[self.cout_attack]):
                 self.attacking = False
                 self.attack_frame = 0
                 self.cout_attack += 1
-            if self.cout_attack >= len(self.type_attack):
+            if self.cout_attack >= len(self.normal_attack_r):
                 self.cout_attack = 0
             if self.face_right:
-                self.image = self.type_attack[self.cout_attack][int(self.attack_frame)]
+                self.image = self.normal_attack_r[self.cout_attack][int(self.attack_frame)]
             else:
-                self.image = self.type_attack[self.cout_attack][int(self.attack_frame)]
+                self.image = self.normal_attack_l[self.cout_attack][int(self.attack_frame)]
+        if self.blocking:
+            self.vel[0] = 0
+            self.block_frame += setting.SPEED_ATTACK
+            if self.block_frame >= len(self.block_r):
+                self.blocking = False
+                self.block_frame = 0
+            if self.face_right:
+                self.image = self.block_r[int(self.block_frame)]
+            else:
+                self.image = self.block_l[int(self.block_frame)]
 
         # Limit of coordinate, velocity
         if self.vel[1] > setting.PLAYER_MAX_Y:
@@ -166,7 +175,7 @@ class Player(pygame.sprite.Sprite):
         if self.rect[0] >= setting.WIDTH - self.rect.width:
             self.rect[0] = setting.WIDTH - self.rect.width
 
-        # -----Move player-----
+        # ----------------Move player----------------
         # Move horizontally
         self.rect.x += self.vel[0]
         hits_list = pygame.sprite.spritecollide(self, self.map.platform_list, False)
@@ -185,17 +194,13 @@ class Player(pygame.sprite.Sprite):
                 self.falling = False
             if self.vel[1] < 0:
                 self.rect.top = hit.rect.bottom
+                self.vel[1] = 0
             self.cout_jump = 0
         if len(hits_list) == 0:
             self.falling = True
 
         # Get size, mask of image
         self.size = self.image.get_size()
-        self.mask = pygame.mask.from_surface(self.image)
-
-    def draw_health_bar(self):
-        """ This function used to draw health bar of the player. """
-        pass
 
     def draw(self, screen):
         """ This function is used to draw player"""
@@ -206,3 +211,19 @@ class Player(pygame.sprite.Sprite):
             Because the images in different actions are of different sizes.
             And we need the player in the middle. """
 
+        """ Draw health bar of the player"""
+        if self.current_HP > 60:
+            col = setting.GREEN
+        elif self.current_HP > 30:
+            col = setting.YELLOW
+        else:
+            col = setting.RED
+        width = int(self.rect.width * self.current_HP / self.max_HP) * 10
+        font = pygame.font.SysFont(None, 20)
+        text = str(int(self.current_HP)) + "/" + str(self.max_HP)
+        Text = font.render(text, True, setting.WHITE, None)
+        TextRect = Text.get_rect()
+        TextRect.center = (200, 15)
+        if self.current_HP > 0:
+            pygame.draw.rect(screen, col, (0, 0, width, 30))
+            screen.blit(Text, TextRect)

@@ -1,14 +1,16 @@
 import pygame
 import setting
 from player import Player
-import monsters
 import maps
 
+pygame.init()
+pygame.mixer.init()
+font = pygame.font.SysFont(None, 20)
+
+def game_start():
+    pass
 def main():
     """ Main Program """
-    pygame.init()
-    pygame.mixer.init()
-
     # Create a screen
     screen = pygame.display.set_mode((setting.WIDTH, setting.HEIGHT))
     pygame.display.set_caption('PUNCH!!!!!')
@@ -22,8 +24,7 @@ def main():
     player.rect.y = 400
 
     # Create all the maps
-    map_list = []
-    map_list.append(maps.Map_01(player))
+    map_list = [maps.Map_01(player)]
 
     # Set the current map
     current_map_index = 0
@@ -56,32 +57,11 @@ def main():
                         player.cout_jump += 1
                 # Attacking event
                 if event.key == pygame.K_j:
-                    if player.type_attack not in [player.punch_r, player.punch_l]:
-                        if player.face_right:
-                            player.type_attack = player.punch_r
-                        else:
-                            player.type_attack = player.punch_l
-                        player.cout_attack = 0
                     if not player.attacking:
                         player.attacking = True
                 if event.key == pygame.K_k:
-                    if player.type_attack not in [player.kick_r, player.kick_l]:
-                        if player.face_right:
-                            player.type_attack = player.kick_r
-                        else:
-                            player.type_attack = player.kick_l
-                        player.cout_attack = 0
-                    if not player.attacking:
-                        player.attacking = True
-                if event.key == pygame.K_l:
-                    if player.type_attack not in [player.block_r, player.block_l]:
-                        if player.face_right:
-                            player.type_attack = player.block_r
-                        else:
-                            player.type_attack = player.block_l
-                        player.cout_attack = 0
-                    if not player.attacking:
-                        player.attacking = True
+                    if not player.blocking:
+                        player.blocking = True
                 # Quit event
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
@@ -92,7 +72,7 @@ def main():
                 if event.key == pygame.K_d:
                     player.moving = False
 
-        #If the player near the right side, scroll the map left
+        # If the player near the right side, scroll the map left
         if player.rect.x >= setting.WIDTH * 1 / 2:
             if current_map.map_scroll > -current_map.map_limit + setting.WIDTH:
                 diff = player.rect.x - setting.WIDTH * 1 / 2
