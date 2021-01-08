@@ -84,9 +84,6 @@ class Game():
                 if event.key == pygame.K_j:
                     if not self.player.attacking:
                         self.player.attacking = True
-                if event.key == pygame.K_k:
-                    if not self.player.blocking:
-                        self.player.blocking = True
                 # Quit event
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()

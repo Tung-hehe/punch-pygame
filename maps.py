@@ -54,10 +54,8 @@ class Map(pygame.sprite.Sprite):
                 if enemy.face_right:
                     enemy.attacking = True
             if enemy.image in enemy.true_attack:
-                if self.player.image in self.player.true_block:
-                    self.player.current_HP -= enemy.damage / 25
-                else:
-                    self.player.current_HP -= enemy.damage / 5
+                self.player.beaten = True
+                self.player.current_HP -= enemy.damage / 5
             if self.player.image in self.player.true_attack:
                 if (self.player.rect.x <= enemy.rect.x and self.player.face_right) or \
                     (self.player.rect.x > enemy.rect.x and  not self.player.face_right):

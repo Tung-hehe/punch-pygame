@@ -13,20 +13,21 @@ class Player(pygame.sprite.Sprite):
     moving = False
     # Is the player attacking?
     attacking = False
-    blocking = False
+    beaten = False
     # Is the player jumping?
     jumping = False
     # Is the player falling?
     falling = True
     # Which map is the player on?
     map = None
-    # Frame for action run, stand
+    # Frame for action run, stand, fall
     frame = 0
     # Frame for action attack
     attack_frame = 0
-    block_frame = 0
     # Frame for action jump
     jump_frame = 0
+    # Frame for action beaten
+    beaten_frame = 0
     # Check double-jump
     cout_jump = 0
     # Check combo of player
@@ -65,17 +66,11 @@ class Player(pygame.sprite.Sprite):
         self.normal_attack_l = [sprites.hori_flip_sprite('image/Player/attack/normal_attack_1/', 4),
                         sprites.hori_flip_sprite('image/Player/attack/normal_attack_2/', 4),
                         sprites.hori_flip_sprite('image/Player/attack/normal_attack_3/', 7)]
-        # Load all the blocking images
-        self.block_r = sprites.load_sprite('image/Player/block/', 7)
-        self.block_l = sprites.hori_flip_sprite('image/Player/block/', 7)
+        self.beaten_r = sprites.load_sprite('image/Player/beaten/', 5)
+        self.beaten_l = sprites.hori_flip_sprite('image/Player/beaten/', 5)
         self.true_attack = [self.normal_attack_l[0][1], self.normal_attack_r[0][1],
                             self.normal_attack_l[1][1], self.normal_attack_r[1][1],
                             self.normal_attack_l[2][2], self.normal_attack_r[2][2]]
-        self.true_block = [self.block_r[0], self.block_l[0],
-                           self.block_r[1], self.block_l[1],
-                           self.block_r[2], self.block_l[2],
-                           self.block_r[3], self.block_l[3]]
-
         self.image = self.stand_r[0]
         # Get rectangle surrounding image, we will calculate its coordinates
         self.rect = self.image.get_rect()
@@ -152,16 +147,17 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.normal_attack_r[self.cout_attack][int(self.attack_frame)]
             else:
                 self.image = self.normal_attack_l[self.cout_attack][int(self.attack_frame)]
-        if self.blocking:
+        if self.beaten:
             self.vel[0] = 0
-            self.block_frame += setting.SPEED_ATTACK
-            if self.block_frame >= len(self.block_r):
-                self.blocking = False
-                self.block_frame = 0
+            self.beaten_frame += setting.SPEED_ATTACK
+            if self.beaten_frame >= len(self.beaten_r):
+                self.beaten = False
+                self.beaten_frame = 0
+                self.start_timer = pygame.time.get_ticks()
             if self.face_right:
-                self.image = self.block_r[int(self.block_frame)]
+                self.image = self.beaten_r[int(self.beaten_frame)]
             else:
-                self.image = self.block_l[int(self.block_frame)]
+                self.image = self.beaten_l[int(self.beaten_frame)]
 
         # Limit of coordinate, velocity
         if self.vel[1] > setting.PLAYER_MAX_Y:
