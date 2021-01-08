@@ -181,8 +181,6 @@ class Wolf(Monster):
         self.size = self.image.get_size()
         self.rect.x = x
         self.rect.y = y
-        # Get mask
-        self.mask = pygame.mask.from_surface(self.image)
         self.max_HP = 120
         self.current_HP = 100
         self.damage = 15
@@ -210,8 +208,6 @@ class Female_Zombie(Monster):
         self.size = self.image.get_size()
         self.rect.x = x
         self.rect.y = y
-        # Get mask
-        self.mask = pygame.mask.from_surface(self.image)
         self.max_HP = 150
         self.current_HP = 100
         self.damage = 10

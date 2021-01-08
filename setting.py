@@ -29,6 +29,7 @@ SPEED_JUMP = 0.7
 SPEED_FALL = 0.2
 SPEED_ATTACK = 0.2
 # Color
+BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 180, 0)
 RED = (180, 0, 0)
