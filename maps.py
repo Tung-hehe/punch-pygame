@@ -4,15 +4,26 @@ import platforms
 import monsters
 import items
 
-def load_ground(filename):
+def load_file(filename):
     file = open(filename, 'r')
     data = file.read()
     file.close()
     data = data.split('\n')
+    return data
+
+def load_ground(filename):
+    data = load_file(filename)
     ground = []
     for tile in data:
         ground.append(list(tile))
     return ground
+
+def load_enemies(filename):
+    data = load_file(filename)
+    enemies = []
+    for enemy in data:
+        enemies.append(enemy.split(' '))
+    return enemies
 
 class Map(pygame.sprite.Sprite):
     """ This is a generic super-class used to define a map.
@@ -61,7 +72,6 @@ class Map(pygame.sprite.Sprite):
                     (self.player.rect.x > enemy.rect.x and  not self.player.face_right):
                     enemy.beaten = True
                     enemy.current_HP -= self.player.damage / 5
-
     def draw(self, screen):
         """ Draw everything on this map"""
 
@@ -104,5 +114,16 @@ class Map_01(Map):
                 if tiles[x][y] != '0':
                     tile = platforms.Platform(y * setting.TILE_SIZE, x * setting.TILE_SIZE)
                     self.platform_list.add(tile)
-        self.enemy_list.add(monsters.Wolf(1320, 482))
-        self.enemy_list.add(monsters.Female_Zombie(1200, 482))
+        enemies = load_enemies('image/Map_1/enemies.txt')
+        for enemy in enemies:
+            if enemy[0] == 'Wolf':
+                self.enemy_list.add(monsters.Wolf(int(enemy[1]), int(enemy[2])))
+            elif enemy[0] == 'Female_Zombie':
+                self.enemy_list.add(monsters.Female_Zombie(int(enemy[1]), int(enemy[2])))
+            else:
+                self.enemy_list.add(monsters.Male_Zombie(int(enemy[1]), int(enemy[2])))
+
+        # self.enemy_list.add(monsters.Wolf(1320, 498))
+        # self.enemy_list.add(monsters.Female_Zombie(1200, 482))
+        # self.enemy_list.add(monsters.Male_Zombie(2380, 426))
+        # self.enemy_list.add(monsters.Female_Zombie(2400, 426))

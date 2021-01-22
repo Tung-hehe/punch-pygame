@@ -13,7 +13,7 @@ class Monster(pygame.sprite.Sprite):
     # If monster is beaten.
     beaten = False
     # Velcity of monster
-    vel = [0, 0]
+    vel = 0
     # Frame for all actions
     stand_frame = 0
     run_frame = 0
@@ -50,7 +50,7 @@ class Monster(pygame.sprite.Sprite):
         self.speed = speed
 
     def idle(self):
-        self.vel[0] = 0
+        self.vel = 0
         self.stand_frame += setting.SPEED_STAND
         if self.face_right:
             self.image = self.stand_r[int(self.stand_frame) % len(self.stand_r)]
@@ -64,17 +64,17 @@ class Monster(pygame.sprite.Sprite):
         if self.moving:
             self.run_frame += setting.SPEED_RUN
             if self.face_right:
-                self.vel[0] = setting.MONSTER_VEL * self.speed
+                self.vel = setting.MONSTER_VEL * self.speed
                 self.image = self.run_r[int(self.run_frame)%len(self.run_r)]
             else:
-                self.vel[0] = -setting.MONSTER_VEL * self.speed
+                self.vel = -setting.MONSTER_VEL * self.speed
                 self.image = self.run_l[int(self.run_frame) % len(self.run_l)]
         # Monster stand
         else:
             self.idle()
         # Monster attack
         if self.attacking:
-            self.vel[0] = 0
+            self.vel = 0
             if pygame.time.get_ticks() - self.start_timer > 500:
                 self.attack_frame += setting.SPEED_ATTACK
                 if self.attack_frame >= len(self.attack_r):
@@ -89,7 +89,7 @@ class Monster(pygame.sprite.Sprite):
                 self.idle()
         # Monster beaten
         if self.beaten:
-            self.vel[0] = 0
+            self.vel = 0
             self.beaten_frame += setting.SPEED_ATTACK
             if self.beaten_frame >= len(self.beaten_r):
                 self.beaten = False
@@ -101,7 +101,7 @@ class Monster(pygame.sprite.Sprite):
                 self.image = self.beaten_l[int(self.beaten_frame)]
         # Monster die
         if self.current_HP <= 0:
-            self.vel[0] = 0
+            self.vel = 0
             self.death_frame += setting.SPEED_ATTACK
             if self.death_frame >= len(self.death_r):
                 self.death_frame = int(len(self.death_r)) - 1
@@ -113,27 +113,15 @@ class Monster(pygame.sprite.Sprite):
 
         # ----------------Move monster----------------
         # Move horizontally
-        self.rect.x += self.vel[0]
+        self.rect.x += self.vel
         hits_list = pygame.sprite.spritecollide(self, platforms, False)
         for hit in hits_list:
-            if self.vel[0] > 0:
+            if self.vel > 0:
                 self.rect.right = hit.rect.left
                 self.face_right = False
-            if self.vel[0] < 0:
+            if self.vel < 0:
                 self.rect.left = hit.rect.right
                 self.face_right = True
-
-        # Move vertically
-        self.rect.y += self.vel[1]
-        hits_list = pygame.sprite.spritecollide(self, platforms, False)
-        for hit in hits_list:
-            if self.vel[1] > 0:
-                self.rect.bottom = hit.rect.top
-                self.vel[1] = 0
-        if len(hits_list) == 0:
-            self.vel[1] += setting.GRAVITY
-
-        # Get size, mask of image
         self.size = self.image.get_size()
 
     def draw(self, screen):
@@ -159,7 +147,7 @@ class Monster(pygame.sprite.Sprite):
 class Wolf(Monster):
     """ Create Wolf"""
     def __init__(self, x, y):
-        Monster.__init__(self, True, 3)
+        super().__init__(True, 3)
         """ Load all images of Wolf"""
         self.stand_r = sprites.load_sprite('image/Monster/Wolf/stand/', 4)
         self.stand_l = sprites.hori_flip_sprite('image/Monster/Wolf/stand/', 4)
@@ -169,7 +157,6 @@ class Wolf(Monster):
         self.death_l = sprites.hori_flip_sprite('image/Monster/Wolf/death/', 9)
         self.run_r = sprites.load_sprite('image/Monster/Wolf/run/', 6)
         self.run_l = sprites.hori_flip_sprite('image/Monster/Wolf/run/', 6)
-
         self.beaten_r = sprites.load_sprite('image/Monster/Wolf/beaten/1/', 3)
         self.beaten_l = sprites.hori_flip_sprite('image/Monster/Wolf/beaten/1/', 3)
         self.true_attack = [self.attack_r[4], self.attack_l[4]]
@@ -188,7 +175,7 @@ class Wolf(Monster):
 class Female_Zombie(Monster):
     """ Create female zombie"""
     def __init__(self, x, y):
-        Monster.__init__(self, True, 1)
+        super().__init__(True, 1)
         """ Load all image of female zombie"""
         self.stand_r = sprites.load_sprite('image/Monster/Female_Zombie/stand/', 8)
         self.stand_l = sprites.hori_flip_sprite('image/Monster/Female_Zombie/stand/', 8)
@@ -201,6 +188,33 @@ class Female_Zombie(Monster):
         self.beaten_r = sprites.load_sprite('image/Monster/Female_Zombie/beaten/', 3)
         self.beaten_l = sprites.hori_flip_sprite('image/Monster/Female_Zombie/beaten/', 3)
         self.true_attack = [self.attack_r[7], self.attack_l[7]]
+        # Get image
+        self.image = self.stand_r[0]
+        # Get rect
+        self.rect = self.image.get_rect()
+        self.size = self.image.get_size()
+        self.rect.x = x
+        self.rect.y = y
+        self.max_HP = 150
+        self.current_HP = 100
+        self.damage = 10
+
+class Male_Zombie(Monster):
+    """ Create female zombie"""
+    def __init__(self, x, y):
+        super().__init__(True, 1)
+        """ Load all image of male zombie"""
+        self.stand_r = sprites.load_sprite('image/Monster/Male_Zombie/stand/', 10)
+        self.stand_l = sprites.hori_flip_sprite('image/Monster/Male_Zombie/stand/', 10)
+        self.attack_r = sprites.load_sprite('image/Monster/Male_Zombie/attack/', 9)
+        self.attack_l = sprites.hori_flip_sprite('image/Monster/Male_Zombie/attack/', 9)
+        self.death_r = sprites.load_sprite('image/Monster/Male_Zombie/death/', 7)
+        self.death_l = sprites.hori_flip_sprite('image/Monster/Male_Zombie/death/', 7)
+        self.run_r = sprites.load_sprite('image/Monster/Male_Zombie/move/', 20)
+        self.run_l = sprites.hori_flip_sprite('image/Monster/Male_Zombie/move/', 20)
+        self.beaten_r = sprites.load_sprite('image/Monster/Male_Zombie/beaten/', 3)
+        self.beaten_l = sprites.hori_flip_sprite('image/Monster/Male_Zombie/beaten/', 3)
+        self.true_attack = [self.attack_r[4], self.attack_l[4]]
         # Get image
         self.image = self.stand_r[0]
         # Get rect

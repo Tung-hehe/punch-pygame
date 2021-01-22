@@ -50,7 +50,21 @@ class Game():
             TextRect.center = (setting.WIDTH / 2, setting.HEIGHT / 2)
             self.screen.blit(Text, TextRect)
             pygame.display.flip()
-
+    def game_over_screen(self):
+        game_over = True
+        while game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.KEYDOWN:
+                    game_over = False
+            self.screen.fill(setting.BLACK)
+            font = pygame.font.SysFont(None, 70)
+            Text = font.render("GAME OVER!", True, setting.RED, None)
+            TextRect = Text.get_rect()
+            TextRect.center = (setting.WIDTH / 2, setting.HEIGHT / 2)
+            self.screen.blit(Text, TextRect)
+            pygame.display.flip()
     def run(self):
         """ This function is used to run game"""
         while self.running:
@@ -109,6 +123,8 @@ class Game():
                 diff = self.player.rect.x - setting.WIDTH * 1 / 2 + 1
                 self.current_map.scroll_map(-diff)
                 self.player.rect.x = setting.WIDTH * 1 / 2 - 1
+        if self.player.current_HP <= 0:
+            self.running = False
 
         # Update everything
         self.player.update()
@@ -123,10 +139,11 @@ class Game():
 
 def main():
     """ Main function."""
-    game = Game()
     while True:
+        game = Game()
         game.show_start_screen()
         game.run()
+        game.game_over_screen()
 
 # Run function main.
 if __name__ == "__main__":

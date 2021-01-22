@@ -1,0 +1,5 @@
+Female_Zombie 1200 481
+Wolf 1320 496
+Male_Zombie 2380 426
+Wolf 2315 435
+Female_Zombie 2400 420
