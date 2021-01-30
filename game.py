@@ -25,7 +25,7 @@ class Game():
         self.player.rect.y = 400
 
         # Create all the maps
-        self.map_list = [maps.Map_02(self.player), maps.Map_01(self.player)]
+        self.map_list = [maps.Map_01(self.player), maps.Map_02(self.player)]
 
         # Set the current map
         self.current_map_index = 0
