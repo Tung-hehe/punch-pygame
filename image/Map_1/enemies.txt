@@ -3,3 +3,14 @@ Wolf 1320 496
 Male_Zombie 2380 426
 Wolf 2315 435
 Female_Zombie 2400 420
+Female_Zombie 3780 481
+Male_Zombie 3790 486
+Wolf 5160 496
+Male_Zombie 5200 486
+Wolf 6850 435
+Female_Zombie 6870 420
+Male_Zombie 6900 426
+Male_Zombie 6830 426
+Wolf 7830 496
+Male_Zombie 7950 486
+Female_Zombie 9020 481

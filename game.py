@@ -1,4 +1,5 @@
 import pygame
+import sys
 import setting
 from player import Player
 import maps
@@ -24,7 +25,7 @@ class Game():
         self.player.rect.y = 400
 
         # Create all the maps
-        self.map_list = [maps.Map_01(self.player)]
+        self.map_list = [maps.Map_02(self.player), maps.Map_01(self.player)]
 
         # Set the current map
         self.current_map_index = 0
@@ -66,7 +67,7 @@ class Game():
             self.screen.blit(Text, TextRect)
             pygame.display.flip()
     def run(self):
-        """ This function is used to run game"""
+        """ This function is used to run game. """
         while self.running:
             self.clock.tick(setting.FPS)
             self.events()
@@ -80,6 +81,7 @@ class Game():
             if event.type == pygame.QUIT:
                 self.running = False
                 pygame.quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 # Moving left event
                 if event.key == pygame.K_a:
@@ -123,6 +125,15 @@ class Game():
                 diff = self.player.rect.x - setting.WIDTH * 1 / 2 + 1
                 self.current_map.scroll_map(-diff)
                 self.player.rect.x = setting.WIDTH * 1 / 2 - 1
+        # Next map
+        if self.player.rect.left >= setting.WIDTH - self.player.rect.width:
+            if self.current_map_index < len(self.map_list) - 1:
+                if len(self.current_map.enemy_list) == 0:
+                    self.current_map_index += 1
+                    self.current_map = self.map_list[self.current_map_index]
+                    self.player.map = self.current_map
+                    self.player.rect.x = 0
+                    self.player.rect.y = 0
         if self.player.current_HP <= 0:
             self.running = False
 

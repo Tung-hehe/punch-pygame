@@ -146,7 +146,7 @@ class Monster(pygame.sprite.Sprite):
 
 class Wolf(Monster):
     """ Create Wolf"""
-    def __init__(self, x, y):
+    def __init__(self,x, y):
         super().__init__(True, 3)
         """ Load all images of Wolf"""
         self.stand_r = sprites.load_sprite('image/Monster/Wolf/stand/', 4)

@@ -9,7 +9,6 @@ class Item(pygame.sprite.Sprite):
 
     image = None
     rect = None
-    mask = None
     frame = 0
 
     def __init__(self):
@@ -31,7 +30,6 @@ class Coin(Item):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         """ This function used to update image of item. """
