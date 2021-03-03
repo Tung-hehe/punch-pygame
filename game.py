@@ -25,7 +25,7 @@ class Game():
         self.player.rect.y = 400
 
         # Create all the maps
-        self.map_list = [maps.Map_01(self.player), maps.Map_02(self.player)]
+        self.map_list = [maps.Map_01(self.player), maps.Map_02(self.player), maps.Map_03(self.player), maps.Map_04(self.player)]
 
         # Set the current map
         self.current_map_index = 0
@@ -36,32 +36,42 @@ class Game():
         self.running = True
         self.waiting = True
 
+        self.win = False
+        self.sound = pygame.mixer.Sound("Sound.wav")
+
     def show_start_screen(self):
         """ This function is used to show start screen."""
         while self.waiting:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.running = False
                     pygame.quit()
+                    sys.exit()
                 if event.type == pygame.KEYDOWN:
-                    self.waiting = False
+                    if event.key == pygame.K_SPACE:
+                        self.waiting = False
             self.screen.fill(setting.BLACK)
             font = pygame.font.SysFont(None, 50)
-            Text = font.render("Press any key to start!", True, setting.RED, None)
+            Text = font.render("Press 'SPACE' to start!", True, setting.RED, None)
             TextRect = Text.get_rect()
             TextRect.center = (setting.WIDTH / 2, setting.HEIGHT / 2)
             self.screen.blit(Text, TextRect)
             pygame.display.flip()
-    def game_over_screen(self):
-        game_over = True
-        while game_over:
+    def game_end_screen(self):
+        game_win = True
+        while game_win:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    sys.exit()
                 if event.type == pygame.KEYDOWN:
-                    game_over = False
+                    game_win = False
             self.screen.fill(setting.BLACK)
             font = pygame.font.SysFont(None, 70)
-            Text = font.render("GAME OVER!", True, setting.RED, None)
+            if self.win:
+                Text = font.render("You win!", True, setting.RED, None)
+            else:
+                Text = font.render("Game over!", True, setting.RED, None)
             TextRect = Text.get_rect()
             TextRect.center = (setting.WIDTH / 2, setting.HEIGHT / 2)
             self.screen.blit(Text, TextRect)
@@ -134,8 +144,12 @@ class Game():
                     self.player.map = self.current_map
                     self.player.rect.x = 0
                     self.player.rect.y = 0
+                else:
+                    self.running = False
+                    self.win = True
         if self.player.current_HP <= 0:
             self.running = False
+            self.win = False
 
         # Update everything
         self.player.update()
@@ -152,10 +166,10 @@ def main():
     """ Main function."""
     while True:
         game = Game()
+        pygame.mixer.Sound.play(game.sound, 100)
         game.show_start_screen()
         game.run()
-        game.game_over_screen()
-
+        game.game_end_screen()
 # Run function main.
 if __name__ == "__main__":
     main()

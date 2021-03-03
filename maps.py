@@ -101,7 +101,7 @@ class Map_01(Map):
     """ Create map 1. """
     def __init__(self, player):
         # Call the parent constructor
-        Map.__init__(self, player)
+        super().__init__(player)
 
         self.background = pygame.image.load('image/Map_1/background.png').convert()
         self.ground = pygame.image.load('image/Map_1/front_map.png').convert_alpha()
@@ -125,7 +125,7 @@ class Map_02(Map):
     " Create map 2. "
     def __init__(self, player):
         # Call the parent constructor
-        Map.__init__(self, player)
+        super().__init__(player)
 
         self.background = pygame.image.load('image/Map_2/map.png').convert()
         self.ground = pygame.image.load('image/Map_2/map.png').convert_alpha()
@@ -137,6 +137,52 @@ class Map_02(Map):
                     tile = platforms.Platform(y * setting.TILE_SIZE, x * setting.TILE_SIZE)
                     self.platform_list.add(tile)
         enemies = load_enemies('image/Map_2/enemies.txt')
+        for enemy in enemies:
+            if enemy[0] == 'Wolf':
+                self.enemy_list.add(monsters.Wolf(int(enemy[1]), int(enemy[2])))
+            elif enemy[0] == 'Female_Zombie':
+                self.enemy_list.add(monsters.Female_Zombie(int(enemy[1]), int(enemy[2])))
+            else:
+                self.enemy_list.add(monsters.Male_Zombie(int(enemy[1]), int(enemy[2])))
+class Map_03(Map):
+    " Create map 3. "
+    def __init__(self, player):
+        # Call the parent constructor
+        super().__init__(player)
+
+        self.background = pygame.image.load('image/Map_3/map.png').convert()
+        self.ground = pygame.image.load('image/Map_3/map.png').convert_alpha()
+        tiles = load_ground('image/Map_3/map.txt')
+        self.map_limit = setting.TILE_SIZE * len(tiles[0])
+        for x in range(len(tiles)):
+            for y in range(len(tiles[0])):
+                if tiles[x][y] != '0':
+                    tile = platforms.Platform(y * setting.TILE_SIZE, x * setting.TILE_SIZE)
+                    self.platform_list.add(tile)
+        enemies = load_enemies('image/Map_3/enemies.txt')
+        for enemy in enemies:
+            if enemy[0] == 'Wolf':
+                self.enemy_list.add(monsters.Wolf(int(enemy[1]), int(enemy[2])))
+            elif enemy[0] == 'Female_Zombie':
+                self.enemy_list.add(monsters.Female_Zombie(int(enemy[1]), int(enemy[2])))
+            else:
+                self.enemy_list.add(monsters.Male_Zombie(int(enemy[1]), int(enemy[2])))
+class Map_04(Map):
+    " Create map 4. "
+    def __init__(self, player):
+        # Call the parent constructor
+        super().__init__(player)
+
+        self.background = pygame.image.load('image/Map_4/map.png').convert()
+        self.ground = pygame.image.load('image/Map_4/map.png').convert_alpha()
+        tiles = load_ground('image/Map_4/map.txt')
+        self.map_limit = setting.TILE_SIZE * len(tiles[0])
+        for x in range(len(tiles)):
+            for y in range(len(tiles[0])):
+                if tiles[x][y] != '0':
+                    tile = platforms.Platform(y * setting.TILE_SIZE, x * setting.TILE_SIZE)
+                    self.platform_list.add(tile)
+        enemies = load_enemies('image/Map_4/enemies.txt')
         for enemy in enemies:
             if enemy[0] == 'Wolf':
                 self.enemy_list.add(monsters.Wolf(int(enemy[1]), int(enemy[2])))

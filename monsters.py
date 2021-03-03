@@ -122,6 +122,8 @@ class Monster(pygame.sprite.Sprite):
             if self.vel < 0:
                 self.rect.left = hit.rect.right
                 self.face_right = True
+        if self.rect.x <= 0:
+            self.face_right = True
         self.size = self.image.get_size()
 
     def draw(self, screen):

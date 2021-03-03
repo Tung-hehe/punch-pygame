@@ -170,6 +170,8 @@ class Player(pygame.sprite.Sprite):
             self.rect[0] = 0
         if self.rect[0] >= setting.WIDTH - self.rect.width:
             self.rect[0] = setting.WIDTH - self.rect.width
+        if self.rect[1] >= setting.HEIGHT:
+            self.current_HP = 0
 
         # ----------------Move player----------------
         # Move horizontally
