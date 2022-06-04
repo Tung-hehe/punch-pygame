@@ -144,9 +144,6 @@ class Game():
                     self.player.map = self.current_map
                     self.player.rect.x = 0
                     self.player.rect.y = 0
-                else:
-                    self.running = False
-                    self.win = True
         if self.player.current_HP <= 0:
             self.running = False
             self.win = False
