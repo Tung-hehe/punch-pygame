@@ -72,6 +72,7 @@ class Game():
                 Text = font.render("You win!", True, setting.RED, None)
             else:
                 Text = font.render("Game over!", True, setting.RED, None)
+            pygame.mixer.Sound.stop(self.sound)
             TextRect = Text.get_rect()
             TextRect.center = (setting.WIDTH / 2, setting.HEIGHT / 2)
             self.screen.blit(Text, TextRect)
