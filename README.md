@@ -1,11 +1,16 @@
 # Punch
 
-A game maded by Tran Thanh Tung and Nguyen Van Quan using Python
+A game made by Tran Thanh Tung and Nguyen Van Quan using Python
 
 ## Clone repository
 
 ```
 git clone https://github.com/thanhtung1005/Punch-PygameProject
+```
+## Change directory to project's directory
+
+```
+cd path/to/Punch-PygameProject
 ```
 
 ## Install package
