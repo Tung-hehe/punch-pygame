@@ -12,7 +12,28 @@ git clone https://github.com/thanhtung1005/Punch-PygameProject
 ```
 cd path/to/Punch-PygameProject
 ```
+## Create python virtual environment:
+* Create environment by following command:
+    ```console
+    python3 -m venv env
+    ```
 
+* Activate environment:
+    ```console
+    env/Scripts/activate # For windows
+    source env/bin/activate # For Linux or MaxOS
+    ```
+
+* Install libraries in by:
+  ```console
+  pip install -r requirements.txt
+  ```
+
+* Deactivate environment:
+    ```console
+    env/Scripts/deactivate # For windows
+    source env/bin/deactivate # For Linux or MaxOS
+    ```
 ## Install package
 
 ```
