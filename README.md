@@ -1,6 +1,6 @@
 # Punch
 
-A game made by Tran Thanh Tung and Nguyen Van Quan using Python
+A game made by Tran Thanh Tung and Nguyen Van Quan
 
 ## Clone repository
 
